@@ -19,16 +19,17 @@ struct ContentView: View {
                 }
                 .tag(0)
             
-            HomeView()
+//            HomeView()
+            CardScrollView()
                 .tabItem {
-                    Image(systemName: "heart.circle.fill")
+                    Image(systemName: "house.fill")
                     Text("Home")
                 }
                 .tag(1)
             
             ProfileView()
                 .tabItem {
-                    Image(systemName: "person.circle")
+                    Image(systemName: "triangle.fill")
                     Text("Profile")
                 }
                 .tag(2)

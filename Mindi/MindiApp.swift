@@ -50,9 +50,9 @@ struct RootView: View {
                         .ignoresSafeArea()
 
                     Image("Mindi_Launch")
-                        .resizable()
-                        .scaledToFill()
-                        .ignoresSafeArea()
+//                        .resizable()
+//                        .scaledToFill()
+//                        .ignoresSafeArea()
                 }
             }
         }
