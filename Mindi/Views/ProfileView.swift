@@ -13,7 +13,7 @@ struct ProfileView: View {
         NavigationView {
             VStack {
                 Text("SUPABSE VERIFICATION")
-                    .padding(80)
+                    .padding(20)
                     
 //                Task{
 //                    do {
