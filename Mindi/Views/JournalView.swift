@@ -1,5 +1,5 @@
 //
-//  CalendarView.swift
+//  JournalView.swift
 //  Mindi
 //
 //  Created by Riv Sal on 11/9/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CalendarView: View {
+struct JournalView: View {
     @StateObject private var todoService = TodoService()
     @State private var newTodoTitle = ""
     @State private var showAddTodo = false
@@ -99,7 +99,7 @@ struct CalendarView: View {
                     }
                 }
             }
-            .navigationTitle("Calendar")
+            .navigationTitle("Journal")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showAddTodo) {
                 AddTodoSheet(todoService: todoService, isPresented: $showAddTodo)
@@ -244,5 +244,5 @@ struct AddTodoSheet: View {
 }
 
 #Preview {
-    CalendarView()
+    JournalView()
 }

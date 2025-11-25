@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Binding var isLoggedIn: Bool
     @State private var selectedTab = 1 // Start with Home tab (center)
-    
+
     var body: some View {
         TabView(selection: $selectedTab) {
-            CalendarView()
+            JournalView()
                 .tabItem {
-                    Image(systemName: "calendar")
-                    Text("Calendar")
+                    Image(systemName: "book.fill")
+                    Text("Journal")
                 }
                 .tag(0)
             
@@ -23,20 +24,29 @@ struct ContentView: View {
             CardScrollView()
                 .tabItem {
                     Image(systemName: "house.fill")
-                    Text("Home")
+                    Text("Today")
                 }
                 .tag(1)
             
-            ProfileView()
+            
+            MonthCalendarView()
+                .tabItem {
+                    Image(systemName: "31.calendar")
+                    Text("Streak")
+                }
+                .tag(2)
+            
+            ProfileView(isLoggedIn: $isLoggedIn)
                 .tabItem {
                     Image(systemName: "triangle.fill")
                     Text("Profile")
                 }
-                .tag(2)
+                .tag(3)
+
         }
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(isLoggedIn: .constant(true))
 }
