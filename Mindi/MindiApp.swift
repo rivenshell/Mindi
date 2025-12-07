@@ -77,10 +77,8 @@ struct RootView: View {
             }
         }
         .onAppear {
-            // Show launch screen for 0.5 seconds before showing content
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                isInitialized = true
-            }
+            // Transition from launch screen immediately for fast loading
+            isInitialized = true
         }
     }
 }

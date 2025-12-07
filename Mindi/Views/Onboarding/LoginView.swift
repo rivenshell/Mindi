@@ -16,10 +16,18 @@ struct LoginView: View {
     var body: some View {
         ZStack {
             // Background image
-            Image("WelcomeScreen")
+            
+            Image("blue_calm")
                 .resizable()
                 .scaledToFill()
-                .ignoresSafeArea()
+                .frame(maxWidth: .infinity)
+                .frame(height: 450)
+                .clipped()
+                .cornerRadius(20)
+                .shadow(color: .black.opacity(0.2), radius: 15, x: 0, y: 5)
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+
 
             VStack(spacing: 30) {
                 Spacer()

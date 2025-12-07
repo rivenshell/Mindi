@@ -31,9 +31,9 @@ struct ProfileView: View {
                                 .resizable()
                                 .foregroundColor(.gray)
                         }
-                        .frame(width: 100, height: 100)
+                        .frame(width: 80, height: 80)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.purple, lineWidth: 3))
+                     
 
                         // Greeting
                         Text("Hello, \(userName)!")

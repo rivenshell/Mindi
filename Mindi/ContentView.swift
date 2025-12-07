@@ -29,12 +29,6 @@ struct ContentView: View {
                 .tag(1)
             
             
-            MonthCalendarView()
-                .tabItem {
-                    Image(systemName: "31.calendar")
-                    Text("Streak")
-                }
-                .tag(2)
             
             ProfileView(isLoggedIn: $isLoggedIn)
                 .tabItem {
