@@ -8,9 +8,17 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    
     var body: some View {
-        Text("Now im back")
-    }
+        VStack {
+            
+            Text("Hello")
+            Text("Now im back")
+            
+            Text("To stay this time")
+            }
+        }
 }
 
 #Preview {

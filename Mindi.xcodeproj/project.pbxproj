@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		BE14E4012EC10D5200CFC593 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = BE14E4002EC10D5200CFC593 /* README.md */; };
+		BE4D16652ED61786004C2345 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = BE4D16642ED61786004C2345 /* GoogleSignIn */; };
+		BE4D16672ED61786004C2345 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BE4D16662ED61786004C2345 /* GoogleSignInSwift */; };
 		BEC8E85A2EC917240003BEF5 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = BEC8E8592EC917240003BEF5 /* Auth */; };
 		BEC8E85C2EC917240003BEF5 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = BEC8E85B2EC917240003BEF5 /* PostgREST */; };
 		BEC8E85E2EC917240003BEF5 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = BEC8E85D2EC917240003BEF5 /* Storage */; };
@@ -21,9 +23,22 @@
 		BEC8E8872ECA43860003BEF5 /* Launch_Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Launch_Screen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BE4D16912ED627E0004C2345 /* Exceptions for "Mindi" folder in "Mindi" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BE9A74552EC0244C00B1BBA6 /* Mindi */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BE9A74582EC0244C00B1BBA6 /* Mindi */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BE4D16912ED627E0004C2345 /* Exceptions for "Mindi" folder in "Mindi" target */,
+			);
 			path = Mindi;
 			sourceTree = "<group>";
 		};
@@ -34,8 +49,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE4D16652ED61786004C2345 /* GoogleSignIn in Frameworks */,
 				BEC8E8602EC917240003BEF5 /* Supabase in Frameworks */,
 				BEC8E85E2EC917240003BEF5 /* Storage in Frameworks */,
+				BE4D16672ED61786004C2345 /* GoogleSignInSwift in Frameworks */,
 				BEC8E85C2EC917240003BEF5 /* PostgREST in Frameworks */,
 				BEC8E85A2EC917240003BEF5 /* Auth in Frameworks */,
 			);
@@ -86,6 +103,8 @@
 				BEC8E85B2EC917240003BEF5 /* PostgREST */,
 				BEC8E85D2EC917240003BEF5 /* Storage */,
 				BEC8E85F2EC917240003BEF5 /* Supabase */,
+				BE4D16642ED61786004C2345 /* GoogleSignIn */,
+				BE4D16662ED61786004C2345 /* GoogleSignInSwift */,
 			);
 			productName = Mindi;
 			productReference = BE9A74562EC0244C00B1BBA6 /* Mindi.app */;
@@ -117,6 +136,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BEC8E8582EC917240003BEF5 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				BE4D16632ED61786004C2345 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BE9A74572EC0244C00B1BBA6 /* Products */;
@@ -283,10 +303,10 @@
 				DEVELOPMENT_TEAM = 35ANJARV6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mindi/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				INFOPLIST_KEY_UILaunchStoryboardName = Launch_Screen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -318,10 +338,10 @@
 				DEVELOPMENT_TEAM = 35ANJARV6W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mindi/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				INFOPLIST_KEY_UILaunchStoryboardName = Launch_Screen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -366,6 +386,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		BE4D16632ED61786004C2345 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 		BEC8E8582EC917240003BEF5 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift.git";
@@ -377,6 +405,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BE4D16642ED61786004C2345 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BE4D16632ED61786004C2345 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		BE4D16662ED61786004C2345 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BE4D16632ED61786004C2345 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
 		BEC8E8592EC917240003BEF5 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BEC8E8582EC917240003BEF5 /* XCRemoteSwiftPackageReference "supabase-swift" */;

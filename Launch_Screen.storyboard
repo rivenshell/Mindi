@@ -15,8 +15,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Mindi_Launch" translatesAutoresizingMaskIntoConstraints="NO" id="UCx-yY-vv2">
-                                <rect key="frame" x="-125" y="-30" width="642" height="899"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Mindi Icon9" translatesAutoresizingMaskIntoConstraints="NO" id="HrF-vo-w4e">
+                                <rect key="frame" x="130" y="391" width="132" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -30,6 +30,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Mindi_Launch" width="1608" height="3496"/>
+        <image name="Mindi Icon9" width="460" height="383"/>
     </resources>
 </document>

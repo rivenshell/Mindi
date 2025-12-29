@@ -37,11 +37,20 @@ struct CardItem: Identifiable {
     var id: Int
     var title: String
     var description: String
+    var audioFileName: String
+    var gradientColors: [Color]
 //    var imageUrl: String?
 }
 
 struct CardScrollView: View {
-    let cards = [CardItem(id: 0, title: "Grounding Meditation", description: "5 min"), CardItem(id: 1, title: "Breathing Exercise", description: "5 min"), CardItem(id: 2, title: "Sleep Exercise", description: "55 min")]
+    let cards = [
+        CardItem(id: 0, title: "Grounding Meditation", description: "5 min", audioFileName: "grounding-meditation.mp3", gradientColors: [Color(hex: "6E7963"), Color(hex: "4A5540")]),
+        CardItem(id: 1, title: "Breathing Exercise", description: "5 min", audioFileName: "breathing-exercise.mp3", gradientColors: [Color(hex: "8B7355"), Color(hex: "D2691E")]),
+        CardItem(id: 2, title: "Sleep Exercise", description: "55 min", audioFileName: "Guided_Meditation_for_Sleep.mp3", gradientColors: [Color(hex: "5A7D5F"), Color(hex: "3D5A40")])
+    ]
+    @State private var selectedCard: CardItem?
+    @State private var showPlayer = false
+
     var body: some View {
         VStack {
             Text("Good Morning, User")
@@ -65,6 +74,12 @@ struct CardScrollView: View {
                                 .padding(40)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                             )
+                            .onTapGesture {
+                                selectedCard = card
+                                showPlayer = true
+                            }
+                            .scaleEffect(selectedCard?.id == card.id && showPlayer ? 0.95 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: showPlayer)
                     }
                     .containerRelativeFrame(.vertical)
                 }
@@ -82,6 +97,25 @@ struct CardScrollView: View {
                 endRadius: 500
             )
         )
+        .fullScreenCover(isPresented: $showPlayer) {
+            if let card = selectedCard {
+                ZStack(alignment: .topLeading) {
+                    AudioPlayerView(card: card)
+
+                    // Close button
+                    Button(action: {
+                        showPlayer = false
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.white)
+                            .padding(12)
+                            .background(Circle().fill(.white.opacity(0.3)))
+                    }
+                    .padding(20)
+                }
+            }
+        }
     }
 }
 
