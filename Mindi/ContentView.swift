@@ -23,7 +23,7 @@ struct ContentView: View {
 //            HomeView()
             CardScrollView()
                 .tabItem {
-                    Image(systemName: "house.fill")
+                    Image(systemName: "heart.fill")
                     Text("Today")
                 }
                 .tag(1)
@@ -32,7 +32,7 @@ struct ContentView: View {
             
             ProfileView(isLoggedIn: $isLoggedIn)
                 .tabItem {
-                    Image(systemName: "triangle.fill")
+                    Image(systemName: "folder.fill")
                     Text("Profile")
                 }
                 .tag(3)
