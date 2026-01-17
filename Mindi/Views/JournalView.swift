@@ -42,28 +42,41 @@ struct JournalView: View {
                             .frame(maxHeight: .infinity)
                     } else if todoService.todos.isEmpty {
                         VStack(spacing: 12) {
-                            Image(systemName: "checklist")
+                            Image(systemName: "book.pages")
                                 .font(.system(size: 50))
                                 .foregroundStyle(Color(red: 0.7, green: 0.68, blue: 0.65))
 
-                            Text("No todos yet")
+                            Text("No entries yet")
                                 .font(.title3)
                                 .foregroundStyle(Color(red: 0.8, green: 0.78, blue: 0.75))
 
-                            Text("Tap + to add your first todo")
+                            Text("Tap + to create your first journal entry")
                                 .font(.caption)
                                 .foregroundStyle(Color(red: 0.7, green: 0.68, blue: 0.65))
                         }
                         .frame(maxHeight: .infinity)
                     } else {
-                        ScrollView {
-                            LazyVStack(spacing: 12) {
-                                ForEach(todoService.todos) { todo in
-                                    TodoRow(todo: todo, todoService: todoService)
+                        List {
+                            ForEach(todoService.todos) { todo in
+                                NavigationLink(destination: JournalEntryDetailView(entry: todo, todoService: todoService)) {
+                                    JournalEntryRow(entry: todo)
+                                }
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        Task {
+                                            await todoService.deleteTodo(todo)
+                                        }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
                             }
-                            .padding(.horizontal)
                         }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
                     }
                 }
 
@@ -118,49 +131,37 @@ struct JournalView: View {
     }
 }
 
-// MARK: - Todo Row
-struct TodoRow: View {
-    let todo: Todo
-    @ObservedObject var todoService: TodoService
+// MARK: - Journal Entry Row
+struct JournalEntryRow: View {
+    let entry: Todo
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Checkbox
-            Button(action: {
-                Task {
-                    await todoService.toggleTodoCompletion(todo)
-                }
-            }) {
-                Image(systemName: todo.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 24))
-                    .foregroundStyle(
-                        todo.isCompleted ?
-                            Color(red: 0.6, green: 0.9, blue: 0.6) :
-                            Color(red: 0.7, green: 0.68, blue: 0.65)
-                    )
+        VStack(alignment: .leading, spacing: 8) {
+            // Title and Date
+            HStack {
+                Text(entry.title)
+                    .font(.headline)
+                    .foregroundStyle(Color(red: 0.9, green: 0.85, blue: 0.8))
+                    .lineLimit(1)
+
+                Spacer()
+
+                Text(entry.createdAt, style: .date)
+                    .font(.caption)
+                    .foregroundStyle(Color(red: 0.7, green: 0.68, blue: 0.65))
             }
 
-            // Todo Title
-            Text(todo.title)
-                .font(.body)
-                .foregroundStyle(
-                    todo.isCompleted ?
-                        Color(red: 0.6, green: 0.58, blue: 0.55) :
-                        Color(red: 0.9, green: 0.85, blue: 0.8)
-                )
-                .strikethrough(todo.isCompleted)
-
-            Spacer()
-
-            // Delete Button
-            Button(action: {
-                Task {
-                    await todoService.deleteTodo(todo)
-                }
-            }) {
-                Image(systemName: "trash")
-                    .font(.system(size: 16))
-                    .foregroundStyle(Color(red: 0.9, green: 0.6, blue: 0.6))
+            // Body Preview
+            if let body = entry.body, !body.isEmpty {
+                Text(body)
+                    .font(.subheadline)
+                    .foregroundStyle(Color(red: 0.8, green: 0.78, blue: 0.75))
+                    .lineLimit(2)
+            } else {
+                Text("No content")
+                    .font(.subheadline)
+                    .foregroundStyle(Color(red: 0.6, green: 0.58, blue: 0.55))
+                    .italic()
             }
         }
         .padding()
@@ -175,20 +176,22 @@ struct TodoRow: View {
     }
 }
 
-// MARK: - Add Todo Sheet
+// MARK: - Add Entry Sheet
 struct AddTodoSheet: View {
     @ObservedObject var todoService: TodoService
     @Binding var isPresented: Bool
     @State private var todoTitle = ""
+    @State private var todoBody = ""
 
     var body: some View {
         NavigationView {
             ZStack {
                 Color.black.ignoresSafeArea()
 
-                VStack(spacing: 24) {
-                    TextField("Enter todo title", text: $todoTitle)
-                        .font(.body)
+                VStack(spacing: 20) {
+                    TextField("Entry title", text: $todoTitle)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                         .padding()
                         .background(Color.white.opacity(0.1))
                         .foregroundStyle(Color(red: 0.9, green: 0.85, blue: 0.8))
@@ -198,14 +201,38 @@ struct AddTodoSheet: View {
                                 .stroke(Color(red: 0.7, green: 0.68, blue: 0.65).opacity(0.3), lineWidth: 1)
                         )
 
+                    ZStack(alignment: .topLeading) {
+                        if todoBody.isEmpty {
+                            Text("Write your journal entry here...")
+                                .font(.body)
+                                .foregroundStyle(Color(red: 0.6, green: 0.58, blue: 0.55))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 12)
+                        }
+
+                        TextEditor(text: $todoBody)
+                            .font(.body)
+                            .foregroundStyle(Color(red: 0.9, green: 0.85, blue: 0.8))
+                            .scrollContentBackground(.hidden)
+                            .padding(4)
+                    }
+                    .frame(minHeight: 200)
+                    .padding(8)
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(red: 0.7, green: 0.68, blue: 0.65).opacity(0.3), lineWidth: 1)
+                    )
+
                     Button(action: {
                         guard !todoTitle.isEmpty else { return }
                         Task {
-                            await todoService.createTodo(title: todoTitle)
+                            await todoService.createTodo(title: todoTitle, body: todoBody.isEmpty ? nil : todoBody)
                             isPresented = false
                         }
                     }) {
-                        Text("Add Todo")
+                        Text("Create Entry")
                             .font(.headline)
                             .foregroundStyle(.black)
                             .frame(maxWidth: .infinity)
@@ -229,7 +256,7 @@ struct AddTodoSheet: View {
                 }
                 .padding()
             }
-            .navigationTitle("New Todo")
+            .navigationTitle("New Entry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

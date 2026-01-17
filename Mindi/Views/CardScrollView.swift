@@ -51,12 +51,37 @@ struct CardScrollView: View {
     @State private var selectedCard: CardItem?
     @State private var showPlayer = false
 
+    // Get current day of week (1 = Sunday, 2 = Monday, ..., 7 = Saturday)
+    private var currentDayOfWeek: Int {
+        Calendar.current.component(.weekday, from: Date())
+    }
+
+    // Helper function to determine if a day should be highlighted
+    private func shouldHighlight(index: Int) -> Bool {
+        // Map array index to weekday: S(0)=Sun(1), M(2)=Mon(2), T(3)=Tue(3), W(4)=Wed(4), T(5)=Thu(5), F(6)=Fri(6), S(1)=Sat(7)
+        let weekdayMapping = [1, 7, 2, 3, 4, 5, 6] // S S M T W T F -> Sun Sat Mon Tue Wed Thu Fri
+        return weekdayMapping[index] == currentDayOfWeek
+    }
+
     var body: some View {
         VStack {
-            Text("Good Morning, User")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 25)
-//                .padding(.vertical)
+            HStack {
+                Text("Good Morning, User")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 25)
+                //                .padding(.vertical)
+                HStack(spacing: 4) {
+                    // S S M T W T F represents the days
+                    ForEach(0..<7) { index in
+                        let days = ["S", "S", "M", "T", "W", "T", "F"]
+                        Text(days[index])
+                            .fontWeight(shouldHighlight(index: index) ? .bold : .regular)
+                            .underline(shouldHighlight(index: index))
+                    }
+                }
+                .padding(.trailing, 25)
+                // add slider funcationality to the date
+            }
             ScrollView {
                 LazyVStack {
                     ForEach(cards) { card in
