@@ -75,6 +75,7 @@ struct CardScrollView: View {
                     ForEach(0..<7) { index in
                         let days = ["S", "S", "M", "T", "W", "T", "F"]
                         Text(days[index])
+                            .font(.system(size: 14.0))
                             .fontWeight(shouldHighlight(index: index) ? .bold : .regular)
                             .underline(shouldHighlight(index: index))
                     }
