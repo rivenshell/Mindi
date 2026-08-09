@@ -40,10 +40,11 @@ class TodoService: ObservableObject {
     }
 
     // MARK: - Create Todo
-    func createTodo(title: String) async {
+    func createTodo(title: String, body: String? = nil) async {
         let newTodo = Todo(
             id: UUID(),
             title: title,
+            body: body,
             isCompleted: false,
             createdAt: Date(),
             userId: nil
@@ -66,6 +67,31 @@ class TodoService: ObservableObject {
                 self.errorMessage = "Failed to create todo: \(error.localizedDescription)"
             }
             print("Error creating todo: \(error)")
+        }
+    }
+
+    // MARK: - Update Todo
+    func updateTodo(_ todo: Todo) async {
+        do {
+            let response: Todo = try await supabase
+                .from("todos")
+                .update(todo)
+                .eq("id", value: todo.id.uuidString)
+                .select()
+                .single()
+                .execute()
+                .value
+
+            await MainActor.run {
+                if let index = self.todos.firstIndex(where: { $0.id == todo.id }) {
+                    self.todos[index] = response
+                }
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = "Failed to update todo: \(error.localizedDescription)"
+            }
+            print("Error updating todo: \(error)")
         }
     }
 

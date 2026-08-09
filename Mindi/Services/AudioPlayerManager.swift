@@ -17,20 +17,7 @@ class AudioPlayerManager: NSObject, ObservableObject {
 
     private var audioPlayer: AVAudioPlayer?
     private var timer: Timer?
-
-    override init() {
-        super.init()
-        setupAudioSession()
-    }
-
-    private func setupAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print("Failed to setup audio session: \(error)")
-        }
-    }
+    private var isSessionActive = false
 
     func loadAudio(from data: Data) {
         isLoading = true
@@ -47,6 +34,7 @@ class AudioPlayerManager: NSObject, ObservableObject {
     }
 
     func play() {
+        activateSessionIfNeeded()
         audioPlayer?.play()
         isPlaying = true
         startTimer()
@@ -56,6 +44,7 @@ class AudioPlayerManager: NSObject, ObservableObject {
         audioPlayer?.pause()
         isPlaying = false
         stopTimer()
+        deactivateSession()
     }
 
     func togglePlayPause() {
@@ -77,6 +66,29 @@ class AudioPlayerManager: NSObject, ObservableObject {
         isPlaying = false
         currentTime = 0
         stopTimer()
+        deactivateSession()
+    }
+
+    private func activateSessionIfNeeded() {
+        guard !isSessionActive else { return }
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [])
+            try session.setActive(true)
+            isSessionActive = true
+        } catch {
+            print("Failed to activate audio session: \(error)")
+        }
+    }
+
+    private func deactivateSession() {
+        guard isSessionActive else { return }
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            isSessionActive = false
+        } catch {
+            print("Failed to deactivate audio session: \(error)")
+        }
     }
 
     private func startTimer() {
@@ -94,6 +106,9 @@ class AudioPlayerManager: NSObject, ObservableObject {
     deinit {
         stopTimer()
         audioPlayer?.stop()
+        if isSessionActive {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
 }
 
@@ -102,5 +117,6 @@ extension AudioPlayerManager: AVAudioPlayerDelegate {
         isPlaying = false
         currentTime = 0
         stopTimer()
+        deactivateSession()
     }
 }
