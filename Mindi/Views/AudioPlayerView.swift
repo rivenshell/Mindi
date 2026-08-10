@@ -15,26 +15,28 @@ struct AudioPlayerView: View {
 
     var body: some View {
         ZStack {
-            // Animated background
+            // Animated background - full screen
             FlowingMeshGradientView(colors: card.gradientColors)
+                .ignoresSafeArea()
 
-            VStack(spacing: 40) {
+            VStack(spacing: 0) {
                 Spacer()
 
                 // Title and description
-                VStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
                     Text(card.title)
-                        .font(.system(size: 32, weight: .bold))
+                        .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
 
                     Text(card.description)
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(.white.opacity(0.7))
                 }
-                .padding(.horizontal)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 32)
 
-                // Progress bar
+                // Progress scrubber
                 VStack(spacing: 8) {
                     Slider(
                         value: Binding(
@@ -47,76 +49,69 @@ struct AudioPlayerView: View {
 
                     HStack {
                         Text(formatTime(audioManager.currentTime))
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
 
                         Spacer()
 
                         Text(formatTime(audioManager.duration))
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
                     }
                 }
-                .padding(.horizontal, 40)
+                .padding(.horizontal, 24)
 
-                // Playback controls
-                HStack(spacing: 60) {
-                    // Rewind 15s
-                    Button(action: {
-                        let newTime = max(0, audioManager.currentTime - 15)
-                        audioManager.seek(to: newTime)
-                    }) {
+                // Compact Spotify-style controls
+                HStack(spacing: 40) {
+                    Button {
+                        audioManager.seek(to: max(0, audioManager.currentTime - 15))
+                    } label: {
                         Image(systemName: "gobackward.15")
                             .font(.system(size: 28))
                             .foregroundColor(.white)
                     }
 
-                    // Play/Pause button
-                    Button(action: {
+                    Button {
                         audioManager.togglePlayPause()
-                    }) {
-                        ZStack {
-                            Circle()
-                                .fill(.white.opacity(0.3))
-                                .frame(width: 80, height: 80)
-
-                            Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
-                                .font(.system(size: 32))
-                                .foregroundColor(.white)
-                                .offset(x: audioManager.isPlaying ? 0 : 3)
-                        }
+                    } label: {
+                        Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.black)
+                            .offset(x: audioManager.isPlaying ? 0 : 2)
+                            .frame(width: 64, height: 64)
+                            .background(Circle().fill(.white))
                     }
                     .disabled(audioManager.isLoading)
 
-                    // Forward 15s
-                    Button(action: {
-                        let newTime = min(audioManager.duration, audioManager.currentTime + 15)
-                        audioManager.seek(to: newTime)
-                    }) {
+                    Button {
+                        audioManager.seek(to: min(audioManager.duration, audioManager.currentTime + 15))
+                    } label: {
                         Image(systemName: "goforward.15")
                             .font(.system(size: 28))
                             .foregroundColor(.white)
                     }
                 }
+                .padding(.top, 20)
+                .padding(.bottom, 48)
 
                 // Error message
                 if let error = errorMessage {
                     Text(error)
-                        .foregroundColor(.red)
+                        .font(.system(size: 14))
+                        .foregroundColor(.white)
                         .padding()
-                        .background(.white.opacity(0.2))
-                        .cornerRadius(10)
-                        .padding(.horizontal)
+                        .background(.red.opacity(0.6))
+                        .cornerRadius(12)
+                        .padding(.horizontal, 40)
+                        .padding(.bottom, 20)
                 }
 
                 // Loading indicator
                 if audioManager.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(1.5)
+                        .padding(.bottom, 20)
                 }
-
-                Spacer()
             }
         }
         .onAppear {

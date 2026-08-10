@@ -15,8 +15,10 @@ struct HomeView: View {
             
             Text("Hello")
             Text("Now im back")
-            
+            Text("Its been a while since ive done this")
             Text("To stay this time")
+            
+            
             }
         }
 }

@@ -66,12 +66,17 @@ struct LoginView: View {
                     }
                 }) {
                     HStack(spacing: 8) {
-                        Image("Google__G__logo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                        Text("Sign in with Google")
-                            .font(.system(size: 17, weight: .semibold))
+                        if isLoading {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image("Google__G__logo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                            Text("Sign in with Google")
+                                .font(.system(size: 17, weight: .semibold))
+                        }
                     }
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)

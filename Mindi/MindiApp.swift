@@ -7,6 +7,7 @@
 
 import SwiftUI
 import GoogleSignIn
+import Supabase
 
 @main
 struct MindiApp: App {
@@ -79,6 +80,18 @@ struct RootView: View {
         .onAppear {
             // Transition from launch screen immediately for fast loading
             isInitialized = true
+        }
+        .task {
+            // isLoggedIn is cached in UserDefaults, but the real session lives in
+            // the Keychain and can expire. Render from the cached flag so launch
+            // stays instant, then reconcile in the background rather than awaiting
+            // the network before the first frame.
+            guard isLoggedIn else { return }
+            do {
+                _ = try await supabase.auth.session
+            } catch {
+                isLoggedIn = false
+            }
         }
     }
 }
