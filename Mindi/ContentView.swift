@@ -13,7 +13,7 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            JournalView()
+            JournalView(isLoggedIn: $isLoggedIn)
                 .tabItem {
                     Image(systemName: "book.fill")
                     Text("Journal")
@@ -23,19 +23,19 @@ struct ContentView: View {
 //            HomeView()
             CardScrollView()
                 .tabItem {
-                    Image(systemName: "heart.fill")
+                    Image(systemName: "circle.hexagonpath.fill")
                     Text("Today")
                 }
                 .tag(1)
             
             
             
-            ProfileView(isLoggedIn: $isLoggedIn)
-                .tabItem {
-                    Image(systemName: "folder.fill")
-                    Text("Profile")
-                }
-                .tag(3)
+//            ProfileView(isLoggedIn: $isLoggedIn)
+//                .tabItem {
+//                    Image(systemName: "folder.fill")
+//                    Text("Profile")
+//                }
+//                .tag(3)
 
         }
     }

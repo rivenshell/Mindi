@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct JournalView: View {
-    @StateObject private var todoService = TodoService()
-    @State private var newTodoTitle = ""
-    @State private var showAddTodo = false
+    @Binding var isLoggedIn: Bool
+    @StateObject private var journalService = JournalService()
+    @State private var showAddEntry = false
 
     var body: some View {
         NavigationView {
@@ -21,26 +21,22 @@ struct JournalView: View {
 
                 VStack(spacing: 0) {
                     // Header
-                    VStack(spacing: 8) {
-                        Text("Journaling Hub")
-                            .font(.largeTitle)
-                            .fontWeight(.semibold)
+                    HStack {
+                        Spacer()
+                        DayOfWeekTracker()
                             .foregroundStyle(Color(red: 0.9, green: 0.85, blue: 0.8))
-
-                        Image(systemName: "book.fill")
-                            .font(.system(size: 40))
-                            .foregroundStyle(Color(red: 0.85, green: 0.82, blue: 0.78))
                     }
-                    .padding(.top, 20)
-                    .padding(.bottom, 24)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
+                    .padding(.bottom, 12)
 
-                    // Todo List
-                    if todoService.isLoading {
+                    // Journal List
+                    if journalService.isLoading {
                         ProgressView()
                             .tint(Color(red: 0.9, green: 0.85, blue: 0.8))
                             .scaleEffect(1.5)
                             .frame(maxHeight: .infinity)
-                    } else if todoService.todos.isEmpty {
+                    } else if journalService.entries.isEmpty {
                         VStack(spacing: 12) {
                             Image(systemName: "book.pages")
                                 .font(.system(size: 50))
@@ -57,9 +53,9 @@ struct JournalView: View {
                         .frame(maxHeight: .infinity)
                     } else {
                         List {
-                            ForEach(todoService.todos) { todo in
-                                NavigationLink(destination: JournalEntryDetailView(entry: todo, todoService: todoService)) {
-                                    JournalEntryRow(entry: todo)
+                            ForEach(journalService.entries) { entry in
+                                NavigationLink(destination: JournalEntryDetailView(entry: entry, journalService: journalService)) {
+                                    JournalEntryRow(entry: entry)
                                 }
                                 .listRowBackground(Color.clear)
                                 .listRowSeparator(.hidden)
@@ -67,7 +63,7 @@ struct JournalView: View {
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button(role: .destructive) {
                                         Task {
-                                            await todoService.deleteTodo(todo)
+                                            await journalService.deleteEntry(entry)
                                         }
                                     } label: {
                                         Label("Delete", systemImage: "trash")
@@ -86,7 +82,7 @@ struct JournalView: View {
                     HStack {
                         Spacer()
                         Button(action: {
-                            showAddTodo = true
+                            showAddEntry = true
                         }) {
                             Image(systemName: "plus")
                                 .font(.system(size: 24, weight: .semibold))
@@ -114,18 +110,27 @@ struct JournalView: View {
             }
             .navigationTitle("Journal")
             .navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $showAddTodo) {
-                AddTodoSheet(todoService: todoService, isPresented: $showAddTodo)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: ProfileView(isLoggedIn: $isLoggedIn)) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundStyle(Color(red: 0.9, green: 0.85, blue: 0.8))
+                    }
+                }
+            }
+            .sheet(isPresented: $showAddEntry) {
+                AddEntrySheet(journalService: journalService, isPresented: $showAddEntry)
             }
             .task {
-                await todoService.fetchTodos()
+                await journalService.fetchEntries()
             }
-            .alert("Error", isPresented: .constant(todoService.errorMessage != nil)) {
+            .alert("Error", isPresented: .constant(journalService.errorMessage != nil)) {
                 Button("OK") {
-                    todoService.errorMessage = nil
+                    journalService.errorMessage = nil
                 }
             } message: {
-                Text(todoService.errorMessage ?? "")
+                Text(journalService.errorMessage ?? "")
             }
         }
     }
@@ -133,35 +138,47 @@ struct JournalView: View {
 
 // MARK: - Journal Entry Row
 struct JournalEntryRow: View {
-    let entry: Todo
+    let entry: JournalEntry
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Title and Date
             HStack {
-                Text(entry.title)
+                Text(entry.title ?? "Untitled")
                     .font(.headline)
                     .foregroundStyle(Color(red: 0.9, green: 0.85, blue: 0.8))
                     .lineLimit(1)
 
                 Spacer()
 
-                Text(entry.createdAt, style: .date)
+                Text(entry.entryDate, style: .date)
                     .font(.caption)
                     .foregroundStyle(Color(red: 0.7, green: 0.68, blue: 0.65))
             }
 
-            // Body Preview
-            if let body = entry.body, !body.isEmpty {
-                Text(body)
-                    .font(.subheadline)
-                    .foregroundStyle(Color(red: 0.8, green: 0.78, blue: 0.75))
-                    .lineLimit(2)
-            } else {
-                Text("No content")
-                    .font(.subheadline)
-                    .foregroundStyle(Color(red: 0.6, green: 0.58, blue: 0.55))
-                    .italic()
+            // Content Preview
+            Text(entry.content)
+                .font(.subheadline)
+                .foregroundStyle(Color(red: 0.8, green: 0.78, blue: 0.75))
+                .lineLimit(2)
+
+            // Tags
+            if let tags = entry.tags, !tags.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(tags) { tag in
+                            Text(tag.name)
+                                .font(.caption)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    Capsule()
+                                        .fill(Color(hex: tag.color ?? "6E7963"))
+                                )
+                        }
+                    }
+                }
             }
         }
         .padding()
@@ -177,11 +194,11 @@ struct JournalEntryRow: View {
 }
 
 // MARK: - Add Entry Sheet
-struct AddTodoSheet: View {
-    @ObservedObject var todoService: TodoService
+struct AddEntrySheet: View {
+    @ObservedObject var journalService: JournalService
     @Binding var isPresented: Bool
-    @State private var todoTitle = ""
-    @State private var todoBody = ""
+    @State private var entryTitle = ""
+    @State private var entryContent = ""
 
     var body: some View {
         NavigationView {
@@ -189,7 +206,7 @@ struct AddTodoSheet: View {
                 Color.black.ignoresSafeArea()
 
                 VStack(spacing: 20) {
-                    TextField("Entry title", text: $todoTitle)
+                    TextField("Entry title (optional)", text: $entryTitle)
                         .font(.title3)
                         .fontWeight(.semibold)
                         .padding()
@@ -202,7 +219,7 @@ struct AddTodoSheet: View {
                         )
 
                     ZStack(alignment: .topLeading) {
-                        if todoBody.isEmpty {
+                        if entryContent.isEmpty {
                             Text("Write your journal entry here...")
                                 .font(.body)
                                 .foregroundStyle(Color(red: 0.6, green: 0.58, blue: 0.55))
@@ -210,7 +227,7 @@ struct AddTodoSheet: View {
                                 .padding(.vertical, 12)
                         }
 
-                        TextEditor(text: $todoBody)
+                        TextEditor(text: $entryContent)
                             .font(.body)
                             .foregroundStyle(Color(red: 0.9, green: 0.85, blue: 0.8))
                             .scrollContentBackground(.hidden)
@@ -226,9 +243,12 @@ struct AddTodoSheet: View {
                     )
 
                     Button(action: {
-                        guard !todoTitle.isEmpty else { return }
+                        guard !entryContent.isEmpty else { return }
                         Task {
-                            await todoService.createTodo(title: todoTitle, body: todoBody.isEmpty ? nil : todoBody)
+                            await journalService.createEntry(
+                                title: entryTitle.isEmpty ? nil : entryTitle,
+                                content: entryContent
+                            )
                             isPresented = false
                         }
                     }) {
@@ -249,8 +269,8 @@ struct AddTodoSheet: View {
                             )
                             .cornerRadius(12)
                     }
-                    .disabled(todoTitle.isEmpty)
-                    .opacity(todoTitle.isEmpty ? 0.5 : 1.0)
+                    .disabled(entryContent.isEmpty)
+                    .opacity(entryContent.isEmpty ? 0.5 : 1.0)
 
                     Spacer()
                 }
@@ -271,5 +291,5 @@ struct AddTodoSheet: View {
 }
 
 #Preview {
-    JournalView()
+    JournalView(isLoggedIn: .constant(true))
 }

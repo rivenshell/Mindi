@@ -2,78 +2,90 @@
 //  FlowingMeshGradientView.swift
 //  Mindi
 //
-//  Animated mesh gradient background
+//  Animated gradient background with soft blurred shapes
 //
 
 import SwiftUI
 
 struct FlowingMeshGradientView: View {
     let colors: [Color]
-    @State private var animationOffset: CGFloat = 0
-    @State private var secondaryOffset: CGFloat = 0
 
     var body: some View {
         ZStack {
-            // Base gradient layer
-            MeshGradient(colors: colors, offset: animationOffset)
-                .ignoresSafeArea()
+            // Base dark gradient
+            LinearGradient(
+                gradient: Gradient(colors: [colors[0].opacity(0.8), Color.black]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
 
-            // Overlay flowing gradient
-            MeshGradient(colors: colors.reversed(), offset: secondaryOffset)
-                .ignoresSafeArea()
-                .opacity(0.6)
-                .blendMode(.overlay)
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 8).repeatForever(autoreverses: true)) {
-                animationOffset = 1.0
-            }
-            withAnimation(.easeInOut(duration: 12).repeatForever(autoreverses: true)) {
-                secondaryOffset = 1.0
+            // Animated blurred shapes
+            AnimatedBlurredShape(color: colors[0], delay: 0)
+            AnimatedBlurredShape(color: colors.count > 1 ? colors[1] : colors[0], delay: 2)
+            AnimatedBlurredShape(color: colors[0].opacity(0.7), delay: 4)
+            if colors.count > 1 {
+                AnimatedBlurredShape(color: colors[1].opacity(0.6), delay: 6)
             }
         }
     }
 }
 
-struct MeshGradient: View {
-    let colors: [Color]
-    let offset: CGFloat
+struct AnimatedBlurredShape: View {
+    let color: Color
+    let delay: Double
+
+    @State private var position: CGPoint = .zero
+    @State private var scale: CGFloat = 1.0
 
     var body: some View {
         GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
-
-            Canvas { context, size in
-                let centerX = size.width / 2
-                let centerY = size.height / 2
-
-                // Create flowing gradient effect
-                for (index, color) in colors.enumerated() {
-                    let angle = Double(index) * .pi * 2.0 / Double(colors.count) + Double(offset) * .pi
-                    let radius = min(width, height) * (0.5 + offset * 0.3)
-
-                    let x = centerX + cos(angle) * radius * (0.5 + offset * 0.5)
-                    let y = centerY + sin(angle) * radius * (0.5 + offset * 0.5)
-
-                    let gradient = Gradient(colors: [color, color.opacity(0.0)])
-                    let radialGradient = RadialGradient(
-                        gradient: gradient,
-                        center: .init(x: x, y: y),
+            Circle()
+                .fill(
+                    RadialGradient(
+                        gradient: Gradient(colors: [color, color.opacity(0.3)]),
+                        center: .center,
                         startRadius: 0,
-                        endRadius: radius
+                        endRadius: 150
+                    )
+                )
+                .frame(width: 300, height: 300)
+                .blur(radius: 60)
+                .opacity(0.6)
+                .scaleEffect(scale)
+                .position(position)
+                .onAppear {
+                    // Set initial random position
+                    position = CGPoint(
+                        x: geometry.size.width * 0.3,
+                        y: geometry.size.height * 0.3
                     )
 
-                    context.fill(
-                        Path(ellipseIn: CGRect(x: 0, y: 0, width: size.width, height: size.height)),
-                        with: .linearGradient(
-                            gradient,
-                            startPoint: CGPoint(x: centerX, y: centerY),
-                            endPoint: CGPoint(x: x, y: y)
-                        )
-                    )
+                    // Start animation after delay
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                        animateShape(in: geometry.size)
+                    }
                 }
-            }
+        }
+        .ignoresSafeArea()
+    }
+
+    private func animateShape(in size: CGSize) {
+        withAnimation(
+            .easeInOut(duration: 8 + Double.random(in: -2...2))
+            .repeatForever(autoreverses: true)
+        ) {
+            position = CGPoint(
+                x: size.width * CGFloat.random(in: 0.2...0.8),
+                y: size.height * CGFloat.random(in: 0.2...0.8)
+            )
+        }
+
+        withAnimation(
+            .easeInOut(duration: 6 + Double.random(in: -1...1))
+            .repeatForever(autoreverses: true)
+        ) {
+            scale = CGFloat.random(in: 0.8...1.4)
         }
     }
 }
