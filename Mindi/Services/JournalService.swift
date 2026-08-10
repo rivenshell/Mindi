@@ -22,7 +22,9 @@ class JournalService: ObservableObject {
         await MainActor.run { isLoading = true }
 
         do {
-            _ = try await supabase.auth.session
+            _ = try await withTimeout(seconds: 10) {
+                try await supabase.auth.session
+            }
         } catch {
             await MainActor.run {
                 self.errorMessage = "Please sign in to access your journal entries"
